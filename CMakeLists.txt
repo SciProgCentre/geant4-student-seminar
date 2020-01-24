@@ -10,5 +10,8 @@ endif()
 
 include(${Geant4_USE_FILE})
 
-add_executable(pi-decay main.cc)
+include_directories(${PROJECT_SOURCE_DIR}/include)
+file(GLOB sources ${PROJECT_SOURCE_DIR}/src/*.cc)
+
+add_executable(pi-decay main.cc ${sources})
 target_link_libraries(pi-decay ${Geant4_LIBRARIES})

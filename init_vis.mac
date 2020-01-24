@@ -1,0 +1,6 @@
+/vis/open OGL
+
+#/vis/verbose errors
+/vis/drawVolume worlds
+/vis/scene/add/trajectories
+/vis/scene/endOfEventAction accumulate
