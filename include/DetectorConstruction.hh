@@ -15,6 +15,8 @@ public:
     DetectorConstruction();
     G4VPhysicalVolume *Construct() override;
 
+    void ConstructSDandField() override;
+
     const double detector_side_size = 0.5*meter;
     const double detector_length = 2*meter;
     const double calorimeter_lead_thickness = 1*cm;
@@ -36,7 +38,7 @@ private:
     G4LogicalVolume* CreateCalorimeterSection();
     G4LogicalVolume* CreateTrackingLayer();
     G4LogicalVolume* CreateTrackingSection();
-
+    G4LogicalVolume *segmentLogic;
 };
 
 

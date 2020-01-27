@@ -5,6 +5,9 @@
 #include <G4NistManager.hh>
 #include <G4Box.hh>
 #include <G4PVPlacement.hh>
+#include <G4UniformMagField.hh>
+#include "G4FieldManager.hh"
+#include <G4TransportationManager.hh>
 #include "G4LogicalVolume.hh"
 #include "DetectorConstruction.hh"
 #include "G4SystemOfUnits.hh"
@@ -123,7 +126,8 @@ G4LogicalVolume *DetectorConstruction::CreateCalorimeterSection() {
 G4LogicalVolume *DetectorConstruction::CreateTrackingSection() {
     auto segmentSolid = new G4Box("segmentTracking", 0.5 * detector_side_size, 0.5 * detector_side_size,
                                   0.5 * (distance_tracking_layer + 2 * tracking_thickness));
-    auto segmentLogic = new G4LogicalVolume(segmentSolid, vacuum, "segmentTracking");
+
+    segmentLogic = new G4LogicalVolume(segmentSolid, vacuum, "segmentTracking");
 
     auto layerLogic = CreateTrackingLayer();
 
@@ -177,4 +181,15 @@ G4LogicalVolume *DetectorConstruction::CreateTrackingLayer() {
 
 
     return layerLogic;
+}
+
+void DetectorConstruction::ConstructSDandField() {
+    G4VUserDetectorConstruction::ConstructSDandField();
+    G4MagneticField *magField;
+    magField = new G4UniformMagField(G4ThreeVector(0., 3.0 * kilogauss, 0.0));
+    auto fieldMgr = new G4FieldManager;
+    fieldMgr->SetDetectorField(magField);
+    fieldMgr->CreateChordFinder(magField);
+    segmentLogic->SetFieldManager(fieldMgr, true);
+
 }
