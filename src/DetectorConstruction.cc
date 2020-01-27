@@ -43,7 +43,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
 
     auto detectorLogic = CreateDetector();
     auto rightDetector = new G4PVPlacement(0, G4ThreeVector(0, 0, detector_length / 2 + 0.1 * meter), detectorLogic,
-                                           "right", logicWorld, false, 0);
+                                           "rightDetector", logicWorld, false, 0);
     return physWorld;
 }
 
@@ -60,11 +60,31 @@ G4LogicalVolume *DetectorConstruction::CreateDetector() {
         auto segmentPhys = new G4PVPlacement(
                 0,
                 G4ThreeVector(0, 0,
-                        10 * cm + (calorimeter_plastic_thickness +
-                                               calorimeter_lead_thickness) * i),
+                              10 * cm + (calorimeter_plastic_thickness +
+                                         calorimeter_lead_thickness) * i),
                 segmentLogic, name, detector, false, i);
     }
 
+    auto trackingSegmentLogic = CreateTrackingSection();
+    auto trackingLeftPhys = new G4PVPlacement(
+            0,
+            G4ThreeVector(0, 0, -0.5 * meter),
+            trackingSegmentLogic,
+            "rightSegmentTracking",
+            detector,
+            false,
+            0
+    );
+
+    auto trackingRigthPhys = new G4PVPlacement(
+            0,
+            G4ThreeVector(0, 0, -0.5 * meter + distance_tracking_area),
+            trackingSegmentLogic,
+            "leftSegmentTracking",
+            detector,
+            false,
+            0
+    );
 
     return detector;
 }
@@ -75,6 +95,8 @@ DetectorConstruction::DetectorConstruction() {
     vacuum = nist->FindOrBuildMaterial("G4_Galactic");
     lead = nist->FindOrBuildMaterial("G4_Pb");
     plastic = nist->FindOrBuildMaterial("G4_POLYSTYRENE");
+    silicon = nist->FindOrBuildMaterial("G4_Si");
+
 
 }
 
@@ -96,4 +118,63 @@ G4LogicalVolume *DetectorConstruction::CreateCalorimeterSection() {
                                          "plastic", segmentLogic, false, 0);
 
     return segmentLogic;
+}
+
+G4LogicalVolume *DetectorConstruction::CreateTrackingSection() {
+    auto segmentSolid = new G4Box("segmentTracking", 0.5 * detector_side_size, 0.5 * detector_side_size,
+                                  0.5 * (distance_tracking_layer + 2 * tracking_thickness));
+    auto segmentLogic = new G4LogicalVolume(segmentSolid, vacuum, "segmentTracking");
+
+    auto layerLogic = CreateTrackingLayer();
+
+    auto rightLayer = new G4PVPlacement(
+            0,
+            G4ThreeVector(0, 0, -0.5 * (distance_tracking_layer + tracking_thickness)),
+            layerLogic,
+            "rightLayer",
+            segmentLogic,
+            false,
+            0
+    );
+    auto leftLayer = new G4PVPlacement(
+            0,
+            G4ThreeVector(0, 0, 0.5 * (distance_tracking_layer + tracking_thickness)),
+            layerLogic,
+            "leftLayer",
+            segmentLogic,
+            false,
+            0
+    );
+
+    return segmentLogic;
+}
+
+G4LogicalVolume *DetectorConstruction::CreateTrackingLayer() {
+    auto layerSolid = new G4Box("layer", 0.5 * detector_side_size, 0.5 * detector_side_size,
+                                0.5 * tracking_thickness);
+    auto layerLogic = new G4LogicalVolume(layerSolid, vacuum, "layer");
+    auto siliconSolid = new G4Box("silicon", 0.5 * tracking_cell_size, 0.5 * tracking_cell_size,
+                                  0.5 * tracking_thickness);
+    auto siliconLogic = new G4LogicalVolume(siliconSolid, lead, "silicon");
+
+    for (int i = 0; i < number_of_tracking_cell; ++i) {
+        for (int j = 0; j < number_of_tracking_cell; ++j) {
+            auto siliconPhys = new G4PVPlacement(
+                    0,
+                    G4ThreeVector(
+                            tracking_cell_size / 2 + i * tracking_cell_size -
+                            tracking_cell_size * (number_of_tracking_cell / 2),
+                            tracking_cell_size / 2 + j * tracking_cell_size -
+                            tracking_cell_size * (number_of_tracking_cell / 2),
+                            0),
+                    siliconLogic,
+                    "silicon",
+                    layerLogic,
+                    false,
+                    i * number_of_tracking_cell + j);
+        }
+    }
+
+
+    return layerLogic;
 }

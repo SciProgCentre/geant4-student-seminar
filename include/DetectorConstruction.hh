@@ -31,8 +31,11 @@ private:
     G4Material* vacuum;
     G4Material* lead;
     G4Material* plastic;
+    G4Material* silicon;
     G4LogicalVolume* CreateDetector();
     G4LogicalVolume* CreateCalorimeterSection();
+    G4LogicalVolume* CreateTrackingLayer();
+    G4LogicalVolume* CreateTrackingSection();
 
 };
 
