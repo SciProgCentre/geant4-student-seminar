@@ -13,6 +13,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 PrimaryGeneratorAction::PrimaryGeneratorAction() : G4VUserPrimaryGeneratorAction() {
     G4int n_particle = 1;
     fParticleGun  = new G4ParticleGun(n_particle);
+    fParticleGun->SetParticleDefinition(G4Gamma::Definition());
     fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
     fParticleGun->SetParticleEnergy(60.*MeV);
 }
