@@ -8,10 +8,11 @@
 
 #include <G4VUserDetectorConstruction.hh>
 #include "G4SystemOfUnits.hh"
-
+#include "G4LogicalVolume.hh"
 
 class DetectorConstruction : public G4VUserDetectorConstruction{
 public:
+    DetectorConstruction();
     G4VPhysicalVolume *Construct() override;
 
     const double detector_side_size = 0.5*meter;
@@ -25,7 +26,12 @@ public:
     const double distance_tracking_area = 0.20*meter;
     const double distance_tracking_center = 0.20*meter;
     const double distance_tracking_calorimeter = 0.10*meter;
-
+private:
+    G4Material* vacuum;
+    G4Material* lead;
+    G4Material* plastic;
+    G4LogicalVolume* CreateDetector();
+    G4LogicalVolume* CreateCalorimeterSection();
 
 };
 

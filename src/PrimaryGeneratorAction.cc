@@ -14,5 +14,5 @@ PrimaryGeneratorAction::PrimaryGeneratorAction() : G4VUserPrimaryGeneratorAction
     G4int n_particle = 1;
     fParticleGun  = new G4ParticleGun(n_particle);
     fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
-    fParticleGun->SetParticleEnergy(6.*MeV);
+    fParticleGun->SetParticleEnergy(60.*MeV);
 }
