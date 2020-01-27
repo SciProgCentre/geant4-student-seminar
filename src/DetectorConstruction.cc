@@ -88,12 +88,12 @@ G4LogicalVolume *DetectorConstruction::CreateCalorimeterSection() {
     auto plasticSolid = new G4Box("plastic", 0.5 * detector_side_size, 0.5 * detector_side_size,
                                   0.5 * calorimeter_plastic_thickness);
     auto leadLogic = new G4LogicalVolume(leadSolid, lead, "lead");
-    auto plasticLogic = new G4LogicalVolume(plasticSolid, plastic, "lead");
+    auto plasticLogic = new G4LogicalVolume(plasticSolid, plastic, "plastic");
 
     auto leadPhys = new G4PVPlacement(0, G4ThreeVector(0, 0, -calorimeter_lead_thickness / 2), leadLogic, "lead",
                                       segmentLogic, false, 0);
     auto plasticPhys = new G4PVPlacement(0, G4ThreeVector(0, 0, calorimeter_plastic_thickness / 2), plasticLogic,
-                                         "lead", segmentLogic, false, 0);
+                                         "plastic", segmentLogic, false, 0);
 
     return segmentLogic;
 }
