@@ -8,6 +8,9 @@
 #include <G4UniformMagField.hh>
 #include "G4FieldManager.hh"
 #include <G4TransportationManager.hh>
+#include <G4MultiFunctionalDetector.hh>
+#include <G4PSEnergyDeposit.hh>
+#include <G4SDManager.hh>
 #include "G4LogicalVolume.hh"
 #include "DetectorConstruction.hh"
 #include "G4SystemOfUnits.hh"
@@ -45,8 +48,15 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
             checkOverlaps);        //overlaps checking
 
     auto detectorLogic = CreateDetector();
+
     auto rightDetector = new G4PVPlacement(0, G4ThreeVector(0, 0, detector_length / 2 + 0.1 * meter), detectorLogic,
                                            "rightDetector", logicWorld, false, 0);
+
+    auto rotation =  new G4RotationMatrix(3.14,3.14,0);
+
+    auto leftDetector = new G4PVPlacement(rotation, G4ThreeVector(0, 0, -detector_length / 2 - 0.1 * meter), detectorLogic,
+                                          "leftDetector", logicWorld, false, 0);
+
     return physWorld;
 }
 
@@ -113,7 +123,8 @@ G4LogicalVolume *DetectorConstruction::CreateCalorimeterSection() {
     auto plasticSolid = new G4Box("plastic", 0.5 * detector_side_size, 0.5 * detector_side_size,
                                   0.5 * calorimeter_plastic_thickness);
     auto leadLogic = new G4LogicalVolume(leadSolid, lead, "lead");
-    auto plasticLogic = new G4LogicalVolume(plasticSolid, plastic, "plastic");
+
+    plasticLogic = new G4LogicalVolume(plasticSolid, plastic, "plastic");
 
     auto leadPhys = new G4PVPlacement(0, G4ThreeVector(0, 0, -calorimeter_lead_thickness / 2), leadLogic, "lead",
                                       segmentLogic, false, 0);
@@ -191,5 +202,9 @@ void DetectorConstruction::ConstructSDandField() {
     fieldMgr->SetDetectorField(magField);
     fieldMgr->CreateChordFinder(magField);
     segmentLogic->SetFieldManager(fieldMgr, true);
+
+}
+
+void DetectorConstruction::SetupDetectors() {
 
 }
