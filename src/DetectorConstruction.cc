@@ -11,6 +11,7 @@
 #include <G4MultiFunctionalDetector.hh>
 #include <G4PSEnergyDeposit.hh>
 #include <G4SDManager.hh>
+#include <CalorimeterSd.hh>
 #include "G4LogicalVolume.hh"
 #include "DetectorConstruction.hh"
 #include "G4SystemOfUnits.hh"
@@ -55,7 +56,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
     auto rotation =  new G4RotationMatrix(3.14,3.14,0);
 
     auto leftDetector = new G4PVPlacement(rotation, G4ThreeVector(0, 0, -detector_length / 2 - 0.1 * meter), detectorLogic,
-                                          "leftDetector", logicWorld, false, 0);
+                                          "leftDetector", logicWorld, false, 1);
 
     return physWorld;
 }
@@ -202,9 +203,12 @@ void DetectorConstruction::ConstructSDandField() {
     fieldMgr->SetDetectorField(magField);
     fieldMgr->CreateChordFinder(magField);
     segmentLogic->SetFieldManager(fieldMgr, true);
-
+    SetupDetectors();
 }
 
 void DetectorConstruction::SetupDetectors() {
-
+    auto sdman = G4SDManager::GetSDMpointer();
+    auto calorimeterSD = new CalorimeterSD("/calorimeter");
+    sdman->AddNewDetector(calorimeterSD);
+    plasticLogic->SetSensitiveDetector(calorimeterSD);
 }
