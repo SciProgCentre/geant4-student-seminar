@@ -38,7 +38,8 @@ private:
     G4LogicalVolume* CreateCalorimeterSection();
     G4LogicalVolume* CreateTrackingLayer();
     G4LogicalVolume* CreateTrackingSection();
-    G4LogicalVolume *segmentLogic;
+    G4LogicalVolume* CreateMagnet();
+    G4LogicalVolume *magnetLogic;
     G4LogicalVolume *plasticLogic;
     G4LogicalVolume *siliconLogic;
     void SetupDetectors();

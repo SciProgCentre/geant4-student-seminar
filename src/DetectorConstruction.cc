@@ -56,8 +56,8 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
 
     auto rotation =  new G4RotationMatrix(3.14,3.14,0);
 
-    auto leftDetector = new G4PVPlacement(rotation, G4ThreeVector(0, 0, -detector_length / 2 - 0.1 * meter), detectorLogic,
-                                          "leftDetector", logicWorld, false, 1);
+//    auto leftDetector = new G4PVPlacement(rotation, G4ThreeVector(0, 0, -detector_length / 2 - 0.1 * meter), detectorLogic,
+//                                          "leftDetector", logicWorld, false, 1);
 
     return physWorld;
 }
@@ -96,6 +96,17 @@ G4LogicalVolume *DetectorConstruction::CreateDetector() {
             G4ThreeVector(0, 0, -0.5 * meter + distance_tracking_area),
             trackingSegmentLogic,
             "leftSegmentTracking",
+            detector,
+            false,
+            0
+    );
+
+    auto magnetLogic = CreateMagnet();
+    auto magnetPhys = new G4PVPlacement(
+            0,
+            G4ThreeVector(0, 0, -0.5 * meter + 0.5*distance_tracking_area),
+            magnetLogic,
+            "magnet",
             detector,
             false,
             0
@@ -140,7 +151,7 @@ G4LogicalVolume *DetectorConstruction::CreateTrackingSection() {
     auto segmentSolid = new G4Box("segmentTracking", 0.5 * detector_side_size, 0.5 * detector_side_size,
                                   0.5 * (distance_tracking_layer + 2 * tracking_thickness));
 
-    segmentLogic = new G4LogicalVolume(segmentSolid, vacuum, "segmentTracking");
+    auto segmentLogic = new G4LogicalVolume(segmentSolid, vacuum, "segmentTracking");
 
     auto layerLogic = CreateTrackingLayer();
 
@@ -200,11 +211,11 @@ G4LogicalVolume *DetectorConstruction::CreateTrackingLayer() {
 void DetectorConstruction::ConstructSDandField() {
     G4VUserDetectorConstruction::ConstructSDandField();
     G4MagneticField *magField;
-    magField = new G4UniformMagField(G4ThreeVector(0., 3.0 * kilogauss, 0.0));
+    magField = new G4UniformMagField(G4ThreeVector(0., 70.0 * kilogauss, 0.0));
     auto fieldMgr = new G4FieldManager;
     fieldMgr->SetDetectorField(magField);
     fieldMgr->CreateChordFinder(magField);
-    segmentLogic->SetFieldManager(fieldMgr, true);
+    magnetLogic->SetFieldManager(fieldMgr, true);
     SetupDetectors();
 }
 
@@ -219,3 +230,13 @@ void DetectorConstruction::SetupDetectors() {
     siliconLogic->SetSensitiveDetector(trackingSd);
 
 }
+
+G4LogicalVolume *DetectorConstruction::CreateMagnet() {
+    auto magnetSolid = new G4Box("magnet", 0.5 * detector_side_size, 0.5 * detector_side_size,
+                                   1*cm);
+
+    magnetLogic = new G4LogicalVolume(magnetSolid, vacuum, "magnet");
+    return magnetLogic;
+}
+
+
