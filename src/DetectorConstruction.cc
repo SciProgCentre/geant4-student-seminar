@@ -12,6 +12,7 @@
 #include <G4PSEnergyDeposit.hh>
 #include <G4SDManager.hh>
 #include <CalorimeterSd.hh>
+#include <TrackingSd.hh>
 #include "G4LogicalVolume.hh"
 #include "DetectorConstruction.hh"
 #include "G4SystemOfUnits.hh"
@@ -171,7 +172,8 @@ G4LogicalVolume *DetectorConstruction::CreateTrackingLayer() {
     auto layerLogic = new G4LogicalVolume(layerSolid, vacuum, "layer");
     auto siliconSolid = new G4Box("silicon", 0.5 * tracking_cell_size, 0.5 * tracking_cell_size,
                                   0.5 * tracking_thickness);
-    auto siliconLogic = new G4LogicalVolume(siliconSolid, lead, "silicon");
+
+    siliconLogic = new G4LogicalVolume(siliconSolid, lead, "silicon");
 
     for (int i = 0; i < number_of_tracking_cell; ++i) {
         for (int j = 0; j < number_of_tracking_cell; ++j) {
@@ -211,4 +213,9 @@ void DetectorConstruction::SetupDetectors() {
     auto calorimeterSD = new CalorimeterSD("/calorimeter");
     sdman->AddNewDetector(calorimeterSD);
     plasticLogic->SetSensitiveDetector(calorimeterSD);
+
+    auto trackingSd = new TrackingSD("/tracking");
+    sdman->AddNewDetector(trackingSd);
+    siliconLogic->SetSensitiveDetector(trackingSd);
+
 }

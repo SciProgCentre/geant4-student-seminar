@@ -40,6 +40,7 @@ private:
     G4LogicalVolume* CreateTrackingSection();
     G4LogicalVolume *segmentLogic;
     G4LogicalVolume *plasticLogic;
+    G4LogicalVolume *siliconLogic;
     void SetupDetectors();
 };
 
