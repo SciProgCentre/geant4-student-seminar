@@ -56,8 +56,8 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
 
     auto rotation =  new G4RotationMatrix(3.14,3.14,0);
 
-//    auto leftDetector = new G4PVPlacement(rotation, G4ThreeVector(0, 0, -detector_length / 2 - 0.1 * meter), detectorLogic,
-//                                          "leftDetector", logicWorld, false, 1);
+    auto leftDetector = new G4PVPlacement(rotation, G4ThreeVector(0, 0, -detector_length / 2 - 0.1 * meter), detectorLogic,
+                                          "leftDetector", logicWorld, false, 1);
 
     return physWorld;
 }
