@@ -5,6 +5,7 @@
 #include <G4VisExecutive.hh>
 #include <G4UIExecutive.hh>
 #include <G4UImanager.hh>
+#include <RunAction.hh>
 #include "G4RunManager.hh"
 
 int main(int argc,char** argv)
@@ -13,11 +14,12 @@ int main(int argc,char** argv)
     if ( argc == 1 ) {
         ui = new G4UIExecutive(argc, argv);
     }
-
+  TupleId* tupleId = new TupleId();
   G4RunManager* runManager = new G4RunManager;
-  runManager->SetUserInitialization(new DetectorConstruction);
+  runManager->SetUserInitialization(new DetectorConstruction(tupleId));
   runManager->SetUserInitialization(new QGSP_BERT);
   runManager->SetUserAction(new PrimaryGeneratorAction);
+  runManager->SetUserAction(new RunAction(tupleId));
   runManager->Initialize();
 
   G4VisManager* visManager = new G4VisExecutive;

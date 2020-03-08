@@ -8,11 +8,12 @@
 
 #include <G4VSensitiveDetector.hh>
 #include "DetectorConstruction.hh"
-
+#include "g4analysis.hh"
+#include "TupleId.hh"
 
 class CalorimeterSD : public G4VSensitiveDetector{
 public:
-    explicit CalorimeterSD(std::string name) : G4VSensitiveDetector(name){
+    explicit CalorimeterSD(std::string name, TupleId* tupleId) : G4VSensitiveDetector(name), tupleId(tupleId){
 
     };
     G4bool ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist) override;
@@ -27,7 +28,7 @@ private:
     static const int number = DetectorConstruction::calorimeter_number_of_segment;
     double right[number];
     double left[number];
-
+    TupleId* tupleId;
 };
 
 

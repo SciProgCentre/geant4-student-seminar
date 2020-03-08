@@ -115,15 +115,14 @@ G4LogicalVolume *DetectorConstruction::CreateDetector() {
     return detector;
 }
 
-DetectorConstruction::DetectorConstruction() {
+
+DetectorConstruction::DetectorConstruction(TupleId* tupleId) : tupleId(tupleId) {
     // Get nist material manager
     auto nist = G4NistManager::Instance();
     vacuum = nist->FindOrBuildMaterial("G4_Galactic");
     lead = nist->FindOrBuildMaterial("G4_Pb");
     plastic = nist->FindOrBuildMaterial("G4_POLYSTYRENE");
     silicon = nist->FindOrBuildMaterial("G4_Si");
-
-
 }
 
 G4LogicalVolume *DetectorConstruction::CreateCalorimeterSection() {
@@ -221,7 +220,7 @@ void DetectorConstruction::ConstructSDandField() {
 
 void DetectorConstruction::SetupDetectors() {
     auto sdman = G4SDManager::GetSDMpointer();
-    auto calorimeterSD = new CalorimeterSD("/calorimeter");
+    auto calorimeterSD = new CalorimeterSD("/calorimeter", tupleId);
     sdman->AddNewDetector(calorimeterSD);
     plasticLogic->SetSensitiveDetector(calorimeterSD);
 
@@ -238,5 +237,7 @@ G4LogicalVolume *DetectorConstruction::CreateMagnet() {
     magnetLogic = new G4LogicalVolume(magnetSolid, vacuum, "magnet");
     return magnetLogic;
 }
+
+
 
 

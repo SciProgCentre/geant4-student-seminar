@@ -35,9 +35,12 @@ void CalorimeterSD::Initialize(G4HCofThisEvent *event) {
 
 void CalorimeterSD::EndOfEvent(G4HCofThisEvent *event) {
     G4VSensitiveDetector::EndOfEvent(event);
+    auto analysisManager = tupleId->analysisManager;
     for (int i = 0; i<number; ++i){
-        std::cout << left[i]<<" "<< right[i]<<std::endl;
-        right[i] = 0;
-        left[i] = 0;
-    }
+//        std::cout << left[i]<<" "<< right[i]<<std::endl;
+        analysisManager->FillNtupleDColumn(tupleId->leftCalId, i, left[i]);
+        analysisManager->FillNtupleDColumn(tupleId->rightCalId, i, right[i]);
+   }
+    analysisManager->AddNtupleRow(tupleId->leftCalId);
+    analysisManager->AddNtupleRow(tupleId->leftCalId);
 }

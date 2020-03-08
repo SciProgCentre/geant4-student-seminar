@@ -9,10 +9,10 @@
 #include <G4VUserDetectorConstruction.hh>
 #include "G4SystemOfUnits.hh"
 #include "G4LogicalVolume.hh"
-
+#include "TupleId.hh"
 class DetectorConstruction : public G4VUserDetectorConstruction{
 public:
-    DetectorConstruction();
+    explicit DetectorConstruction(TupleId* tupleId);
     G4VPhysicalVolume *Construct() override;
 
     void ConstructSDandField() override;
@@ -43,6 +43,8 @@ private:
     G4LogicalVolume *plasticLogic;
     G4LogicalVolume *siliconLogic;
     void SetupDetectors();
+
+    TupleId* tupleId;
 };
 
 
