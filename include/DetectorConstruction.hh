@@ -7,12 +7,32 @@
 
 
 #include <G4VUserDetectorConstruction.hh>
-
+#include "G4LogicalVolume.hh"
 
 
 class DetectorConstruction : public G4VUserDetectorConstruction{
 public:
     G4VPhysicalVolume *Construct() override;
+
+    DetectorConstruction(){
+        InitializeMaterials();
+    }
+
+private:
+    G4Material* vacuum;
+    G4Material* lead;
+    G4Material* plastic;
+    G4Material* silicon;
+    G4LogicalVolume* CreateDetector();
+    G4LogicalVolume* CreateCalorimeterSection();
+    G4LogicalVolume* CreateTrackingLayer();
+    G4LogicalVolume* CreateTrackingSection();
+    G4LogicalVolume *magnetLogic;
+    G4LogicalVolume *plasticLogic;
+    G4LogicalVolume *siliconLogic;
+    G4LogicalVolume *detectorLogic;
+
+    void InitializeMaterials();
 
 };
 
