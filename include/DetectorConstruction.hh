@@ -14,6 +14,8 @@ class DetectorConstruction : public G4VUserDetectorConstruction{
 public:
     G4VPhysicalVolume *Construct() override;
 
+    void ConstructSDandField() override;
+
     DetectorConstruction(){
         InitializeMaterials();
     }
@@ -33,6 +35,9 @@ private:
     G4LogicalVolume *detectorLogic;
 
     void InitializeMaterials();
+
+    G4LogicalVolume* CreateMagnet();
+    void SetupDetectors();
 
 };
 

@@ -8,14 +8,18 @@
 
 #include <G4VUserPrimaryGeneratorAction.hh>
 #include <G4ParticleGun.hh>
+#include "PiDecayGenerator.hh"
 
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction{
 public:
-    PrimaryGeneratorAction();
+    explicit PrimaryGeneratorAction(bool isPiDecay = false);
     void GeneratePrimaries(G4Event *anEvent) override;
 
 private:
+    bool isPiDecay;
     G4ParticleGun* fParticleGun;
+    PiDecayGenerator *piDecay;
+    G4ParticleTable *particleTable;
 };
 
 
