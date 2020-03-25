@@ -5,6 +5,9 @@
 #include <G4NistManager.hh>
 #include <G4Box.hh>
 #include <G4PVPlacement.hh>
+#include <G4SDManager.hh>
+#include <CalorimeterSd.hh>
+#include "TrackingSd.hh"
 #include "G4LogicalVolume.hh"
 #include "DetectorConstruction.hh"
 #include "G4SystemOfUnits.hh"
@@ -52,9 +55,11 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
 
     // TODO(Создать второй детектор с помошью поворота)
     // Используйте углы Эйлера
-//    auto rotation =  new G4RotationMatrix(CLHEP::halfpi,0,0);
-//    auto leftDetector = new G4PVPlacement(rotation, G4ThreeVector(0, 0, -detector_length / 2 - 0.1 * meter), detectorLogic,
-//                                          "leftDetector", logicWorld, false, 1);
+    auto rotation =  new G4RotationMatrix(CLHEP::halfpi,0,0);
+    auto leftDetector = new G4PVPlacement(rotation, G4ThreeVector(0, 0, -detector_length / 2 - 0.1 * meter), detectorLogic,
+                                          "leftDetector", logicWorld, false, 1);
+
+
     return physWorld;
 }
 
@@ -158,7 +163,6 @@ G4LogicalVolume *DetectorConstruction::CreateTrackingLayer() {
 
 
     return layerLogic;
-    return nullptr;
 }
 
 G4LogicalVolume *DetectorConstruction::CreateTrackingSection() {
@@ -169,7 +173,8 @@ G4LogicalVolume *DetectorConstruction::CreateTrackingSection() {
     auto segmentSolid = new G4Box("segmentTracking", 0.5 * detector_side_size, 0.5 * detector_side_size,
                                   0.5 * (distance_tracking_layer + 2 * tracking_thickness));
 
-    auto segmentLogic = new G4LogicalVolume(segmentSolid, vacuum, "segmentTracking");
+    G4LogicalVolume *segmentLogic;
+    segmentLogic = new G4LogicalVolume(segmentSolid, vacuum, "segmentTracking");
 
     auto layerLogic = CreateTrackingLayer();
 
@@ -194,7 +199,6 @@ G4LogicalVolume *DetectorConstruction::CreateTrackingSection() {
 
     return segmentLogic;
 
-    return nullptr;
 }
 
 void DetectorConstruction::InitializeMaterials() {
@@ -206,6 +210,8 @@ void DetectorConstruction::InitializeMaterials() {
     //TODO(Проиницилизировать, переменную `silicon`.)
     //Hint: Кремний имеет символ Si
     silicon = nist->FindOrBuildMaterial("G4_Si");
+
+    coords = new TrackingCellCoord;
 }
 
 void DetectorConstruction::ConstructSDandField() {
@@ -220,15 +226,15 @@ void DetectorConstruction::ConstructSDandField() {
 }
 
 void DetectorConstruction::SetupDetectors() {
-//    auto sdman = G4SDManager::GetSDMpointer();
+    auto sdman = G4SDManager::GetSDMpointer();
 //    auto calorimeterSD = new CalorimeterSD("/calorimeter", tupleId);
 //    sdman->AddNewDetector(calorimeterSD);
 //    plasticLogic->SetSensitiveDetector(calorimeterSD);
 //
-//    auto trackingSd = new TrackingSD("/tracking", tupleId);
+//    auto trackingSd = new TrackingSD("/tracking", tupleId, coords);
 //    sdman->AddNewDetector(trackingSd);
 //    siliconLogic->SetSensitiveDetector(trackingSd);
-
+//    SetTrackingCellCoord();
 }
 
 G4LogicalVolume *DetectorConstruction::CreateMagnet() {
@@ -238,3 +244,8 @@ G4LogicalVolume *DetectorConstruction::CreateMagnet() {
     magnetLogic = new G4LogicalVolume(magnetSolid, vacuum, "magnet");
     return magnetLogic;
 }
+
+void DetectorConstruction::SetTrackingCellCoord() {
+
+}
+

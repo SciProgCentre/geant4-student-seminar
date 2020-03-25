@@ -5,6 +5,9 @@
 #ifndef PI_DECAY_GEOMETRYSIZE_HH
 #define PI_DECAY_GEOMETRYSIZE_HH
 
+#include "G4SystemOfUnits.hh"
+using namespace CLHEP;
+
 //Размеры детектора
 const double detector_side_size = 0.5*meter;
 const double detector_length = 2*meter;

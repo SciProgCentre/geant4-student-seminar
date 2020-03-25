@@ -8,16 +8,32 @@
 
 #include <G4VUserDetectorConstruction.hh>
 #include "G4LogicalVolume.hh"
+#include "TupleId.hh"
+#include "GeometrySize.hh"
 
+
+class TrackingCellCoord{
+private:
+    G4ThreeVector coords[2][2][2][100];
+public:
+    G4ThreeVector getCoord(int detector, int segment, int layer, int cell){
+        return coords[detector][segment][layer][cell];
+    }
+    void setCoord(int detector, int segment, int layer, int cell,G4ThreeVector coord){
+        coords[detector][segment][layer][cell] = coord;
+    }
+};
 
 class DetectorConstruction : public G4VUserDetectorConstruction{
 public:
+
     G4VPhysicalVolume *Construct() override;
 
     void ConstructSDandField() override;
 
-    DetectorConstruction(){
+    explicit DetectorConstruction(TupleId* tupleId): tupleId(tupleId){
         InitializeMaterials();
+
     }
 
 private:
@@ -33,12 +49,16 @@ private:
     G4LogicalVolume *plasticLogic;
     G4LogicalVolume *siliconLogic;
     G4LogicalVolume *detectorLogic;
+    G4LogicalVolume *segmentLogic;
 
     void InitializeMaterials();
 
     G4LogicalVolume* CreateMagnet();
     void SetupDetectors();
+    TupleId* tupleId;
+    TrackingCellCoord* coords;
 
+    void SetTrackingCellCoord();
 };
 
 
