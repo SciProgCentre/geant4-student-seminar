@@ -29,7 +29,7 @@ void RunAction::BeginOfRunAction(const G4Run *aRun) {
     analysisManager->CreateNtupleDColumn("tL");
     analysisManager->FinishNtuple(leftTrackId);
 
-    int rightTrackId = analysisManager->CreateNtuple("LT", "Left tracking detector");
+    int rightTrackId = analysisManager->CreateNtuple("RT", "Right tracking detector");
     analysisManager->CreateNtupleDColumn("xR");
     analysisManager->CreateNtupleDColumn("yR");
     analysisManager->CreateNtupleDColumn("zR");

@@ -7,11 +7,13 @@
 #include <G4PVPlacement.hh>
 #include <G4SDManager.hh>
 #include <CalorimeterSd.hh>
+#include <G4UniformMagField.hh>
 #include "TrackingSd.hh"
 #include "G4LogicalVolume.hh"
 #include "DetectorConstruction.hh"
 #include "G4SystemOfUnits.hh"
 #include "GeometrySize.hh"
+#include "G4FieldManager.hh"
 
 G4VPhysicalVolume *DetectorConstruction::Construct() {
     // Get nist material manager
@@ -55,9 +57,9 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
 
     // TODO(Создать второй детектор с помошью поворота)
     // Используйте углы Эйлера
-    auto rotation =  new G4RotationMatrix(CLHEP::halfpi,0,0);
-    auto leftDetector = new G4PVPlacement(rotation, G4ThreeVector(0, 0, -detector_length / 2 - 0.1 * meter), detectorLogic,
-                                          "leftDetector", logicWorld, false, 1);
+//    auto rotation =  new G4RotationMatrix(CLHEP::halfpi/3,CLHEP::halfpi/3,CLHEP::halfpi/3);
+//    auto leftDetector = new G4PVPlacement(rotation, G4ThreeVector(0, 0, -detector_length / 2 - 0.1 * meter), detectorLogic,
+//                                          "leftDetector", logicWorld, false, 1);
 
 
     return physWorld;
@@ -69,6 +71,18 @@ G4LogicalVolume *DetectorConstruction::CreateDetector() {
     auto detector = new G4LogicalVolume(detectorSolid, vacuum, "detector");
 
     auto segmentLogic = CreateCalorimeterSection();
+
+    auto magnetLogic = CreateMagnet();
+
+    auto magnetPhys = new G4PVPlacement(
+            0,
+            G4ThreeVector(0, 0, -0.5 * meter + 0.5*distance_tracking_area),
+            magnetLogic,
+            "magnet",
+            detector,
+            false,
+            0
+    );
 
     for (int i = 0; i < calorimeter_number_of_segment; ++i) {
         std::string name = "segment_";
@@ -216,13 +230,13 @@ void DetectorConstruction::InitializeMaterials() {
 
 void DetectorConstruction::ConstructSDandField() {
     G4VUserDetectorConstruction::ConstructSDandField();
-//    G4MagneticField *magField;
-//    magField = new G4UniformMagField(G4ThreeVector(0., 70.0 * kilogauss, 0.0));
-//    auto fieldMgr = new G4FieldManager;
-//    fieldMgr->SetDetectorField(magField);
-//    fieldMgr->CreateChordFinder(magField);
-//    magnetLogic->SetFieldManager(fieldMgr, true);
-//    SetupDetectors();
+    G4MagneticField *magField;
+    magField = new G4UniformMagField(G4ThreeVector(0., 50.0 * kilogauss, 0.0));
+    auto fieldMgr = new G4FieldManager;
+    fieldMgr->SetDetectorField(magField);
+    fieldMgr->CreateChordFinder(magField);
+    magnetLogic->SetFieldManager(fieldMgr, true);
+    SetupDetectors();
 }
 
 void DetectorConstruction::SetupDetectors() {
@@ -231,10 +245,10 @@ void DetectorConstruction::SetupDetectors() {
 //    sdman->AddNewDetector(calorimeterSD);
 //    plasticLogic->SetSensitiveDetector(calorimeterSD);
 //
-//    auto trackingSd = new TrackingSD("/tracking", tupleId, coords);
-//    sdman->AddNewDetector(trackingSd);
-//    siliconLogic->SetSensitiveDetector(trackingSd);
-//    SetTrackingCellCoord();
+    auto trackingSd = new TrackingSD("/tracking", tupleId, coords);
+    sdman->AddNewDetector(trackingSd);
+    siliconLogic->SetSensitiveDetector(trackingSd);
+    SetTrackingCellCoord();
 }
 
 G4LogicalVolume *DetectorConstruction::CreateMagnet() {

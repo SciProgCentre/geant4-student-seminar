@@ -10,6 +10,9 @@
 #include "G4LogicalVolume.hh"
 #include "TupleId.hh"
 #include "GeometrySize.hh"
+#include "G4SystemOfUnits.hh"
+
+using namespace CLHEP;
 
 
 class TrackingCellCoord{

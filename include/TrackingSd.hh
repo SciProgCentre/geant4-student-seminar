@@ -15,15 +15,10 @@
 const int numberOfCell = number_of_tracking_cell *number_of_tracking_cell;
 
 
-struct Adress {
-    int detector = 0;
-    int segment = 0;
-    int layer = 0;
-    int cell = 0;
-};
 
 struct TrackingData{
-    Adress adress = {};
+    int detector = 0;
+    G4ThreeVector position;
     double time = 0;
     double deposit = 0 ;
 };

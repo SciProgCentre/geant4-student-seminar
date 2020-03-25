@@ -14,8 +14,18 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
  * генерировать начальные частицы возникающие при распаде Pi мезона.
  */
     if (isPiDecay){
-        auto particle = piDecay->DecayPi();
-        //FIXME(Отказываться от неподходящих событий)
+        bool flag = false;
+        std::vector<Particle> particle;
+        do {
+            flag = false;
+            particle = piDecay->DecayPi();
+            for (auto it: particle){
+                auto momentum = it.momentum;
+                if ((momentum.theta() / radian > 0.1 &&  momentum.theta() / radian < pi - 0.1 )){
+                    flag = true;
+                }
+            }
+        } while (flag);
 
         for (auto it : particle){
             fParticleGun->SetParticleMomentumDirection(it.momentum);

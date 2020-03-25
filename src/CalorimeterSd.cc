@@ -29,7 +29,7 @@ CalorimeterSD::~CalorimeterSD() {
 
 void CalorimeterSD::Initialize(G4HCofThisEvent *event) {
     G4VSensitiveDetector::Initialize(event);
-    // TODO(Очистить массивы передначалом события)
+    // TODO(Очистить массивы перед началом события)
 }
 
 void CalorimeterSD::EndOfEvent(G4HCofThisEvent *event) {
