@@ -15,18 +15,6 @@
 using namespace CLHEP;
 
 
-class TrackingCellCoord{
-private:
-    G4ThreeVector coords[2][2][2][100];
-public:
-    G4ThreeVector getCoord(int detector, int segment, int layer, int cell){
-        return coords[detector][segment][layer][cell];
-    }
-    void setCoord(int detector, int segment, int layer, int cell,G4ThreeVector coord){
-        coords[detector][segment][layer][cell] = coord;
-    }
-};
-
 class DetectorConstruction : public G4VUserDetectorConstruction{
 public:
 
@@ -59,9 +47,6 @@ private:
     G4LogicalVolume* CreateMagnet();
     void SetupDetectors();
     TupleId* tupleId;
-    TrackingCellCoord* coords;
-
-    void SetTrackingCellCoord();
 };
 
 

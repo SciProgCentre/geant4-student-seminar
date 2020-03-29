@@ -17,7 +17,6 @@ const int numberOfCell = number_of_tracking_cell *number_of_tracking_cell;
 
 
 struct TrackingData{
-    int detector = 0;
     G4ThreeVector position;
     double time = 0;
     double deposit = 0 ;
@@ -27,9 +26,9 @@ struct TrackingData{
 
 class TrackingSD : public G4VSensitiveDetector {
 public:
-    explicit TrackingSD(std::string name, TupleId *tupleId, TrackingCellCoord *coords) : G4VSensitiveDetector(name),
-                                                                                         tupleId(tupleId),
-                                                                                         coords(coords) {
+    explicit TrackingSD(std::string name, TupleId *tupleId) : G4VSensitiveDetector(name),
+                                                                                         tupleId(tupleId) {
+        empty.position = G4ThreeVector(0,0,0);
 
     };
 
@@ -41,9 +40,38 @@ protected:
     G4bool ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist) override;
 
 private:
+    int eventID = 0;
     TupleId *tupleId;
-    TrackingCellCoord *coords;
-    std::vector<TrackingData> data;
+    TrackingData leftData[4];
+    TrackingData rightData[4];
+
+    double left_cur_z = 0;
+    int left_indx = 0;
+    double rigth_cur_z = 0;
+    int rigth_indx = 0;
+
+    TrackingData empty;
+
+//    std::vector<TrackingData> dropRepeated(std::vector<TrackingData> data){
+//        std::vector<TrackingData> new_data;
+//        if (data.size() >1){
+//            new_data.push_back(data.front());
+//            double current_z = data.front().position.getZ();
+//            for (auto it : data){
+//                if (abs(current_z - it.position.getZ()) > 2*tracking_thickness){
+//                    current_z =  it.position.getZ();
+//                    new_data.push_back(it);
+//                }
+//            }
+//        }
+//        if (new_data.size() < 4){
+//            for (int i = 0; i < 4 - data.size(); ++i){
+//                new_data.push_back(empty);
+//            }
+//        }
+//        return new_data;
+//    }
+    
 };
 
 

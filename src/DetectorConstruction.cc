@@ -16,16 +16,12 @@
 #include "G4FieldManager.hh"
 
 G4VPhysicalVolume *DetectorConstruction::Construct() {
-    // Get nist material manager
-    auto nist = G4NistManager::Instance();
-
     // Option to switch on/off checking of volumes overlaps
     G4bool checkOverlaps = true;
 
     // World
     G4double world_sizeXY = 3 * meter;
     G4double world_sizeZ = 5 * meter;
-    G4Material* world_mat = nist->FindOrBuildMaterial("G4_AIR"); //TODO(Сделать вакумный мир)
 
     G4Box* solidWorld =
             new G4Box("World",                       //its name
@@ -35,7 +31,7 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
 
     G4LogicalVolume* logicWorld =
             new G4LogicalVolume(solidWorld,          //its solid
-                                world_mat,           //its material
+                                vacuum,           //its material
                                 "World");            //its name
 
     G4VPhysicalVolume* physWorld =
@@ -55,11 +51,11 @@ G4VPhysicalVolume *DetectorConstruction::Construct() {
                                            "rightDetector", logicWorld, false, 0);
 
 
-    // TODO(Создать второй детектор с помошью поворота)
-    // Используйте углы Эйлера
-//    auto rotation =  new G4RotationMatrix(CLHEP::halfpi/3,CLHEP::halfpi/3,CLHEP::halfpi/3);
-//    auto leftDetector = new G4PVPlacement(rotation, G4ThreeVector(0, 0, -detector_length / 2 - 0.1 * meter), detectorLogic,
-//                                          "leftDetector", logicWorld, false, 1);
+    // Создаем второй детектор с помошью поворота
+    // Используем углы Эйлера
+    auto rotation =  new G4RotationMatrix(CLHEP::pi,CLHEP::pi,CLHEP::pi);
+    auto leftDetector = new G4PVPlacement(rotation, G4ThreeVector(0, 0, -detector_length / 2 - 0.1 * meter), detectorLogic,
+                                          "leftDetector", logicWorld, false, 1);
 
 
     return physWorld;
@@ -116,6 +112,10 @@ G4LogicalVolume *DetectorConstruction::CreateDetector() {
             0
     );
 
+    //Специальный объем для обозначение угла детектора
+//    auto flagSolid = new G4Box("flag", 2.5*cm, 2.5*cm, 2.5*cm);
+//    auto flagLogic = new G4LogicalVolume(flagSolid,vacuum, "flag");
+//    auto flagPhys = new G4PVPlacement(0, G4ThreeVector(0.4*m,0,0), flagLogic, "flag", detector,false, 0);
     return detector;
 }
 
@@ -159,6 +159,7 @@ G4LogicalVolume *DetectorConstruction::CreateTrackingLayer() {
 
     for (int i = 0; i < number_of_tracking_cell; ++i) {
         for (int j = 0; j < number_of_tracking_cell; ++j) {
+            std::string name = "silicon_" + std::to_string(i) + "_" + std::to_string(j);
             auto siliconPhys = new G4PVPlacement(
                     0,
                     G4ThreeVector(
@@ -168,7 +169,7 @@ G4LogicalVolume *DetectorConstruction::CreateTrackingLayer() {
                             tracking_cell_size * (number_of_tracking_cell / 2),
                             0),
                     siliconLogic,
-                    "silicon",
+                    name,
                     layerLogic,
                     false,
                     i * number_of_tracking_cell + j);
@@ -225,7 +226,6 @@ void DetectorConstruction::InitializeMaterials() {
     //Hint: Кремний имеет символ Si
     silicon = nist->FindOrBuildMaterial("G4_Si");
 
-    coords = new TrackingCellCoord;
 }
 
 void DetectorConstruction::ConstructSDandField() {
@@ -241,14 +241,13 @@ void DetectorConstruction::ConstructSDandField() {
 
 void DetectorConstruction::SetupDetectors() {
     auto sdman = G4SDManager::GetSDMpointer();
-//    auto calorimeterSD = new CalorimeterSD("/calorimeter", tupleId);
-//    sdman->AddNewDetector(calorimeterSD);
-//    plasticLogic->SetSensitiveDetector(calorimeterSD);
-//
-    auto trackingSd = new TrackingSD("/tracking", tupleId, coords);
+    auto calorimeterSD = new CalorimeterSD("/calorimeter", tupleId);
+    sdman->AddNewDetector(calorimeterSD);
+    plasticLogic->SetSensitiveDetector(calorimeterSD);
+
+    auto trackingSd = new TrackingSD("/tracking", tupleId);
     sdman->AddNewDetector(trackingSd);
     siliconLogic->SetSensitiveDetector(trackingSd);
-    SetTrackingCellCoord();
 }
 
 G4LogicalVolume *DetectorConstruction::CreateMagnet() {
@@ -259,7 +258,4 @@ G4LogicalVolume *DetectorConstruction::CreateMagnet() {
     return magnetLogic;
 }
 
-void DetectorConstruction::SetTrackingCellCoord() {
-
-}
 

@@ -7,34 +7,32 @@
 #include "PrimaryGeneratorAction.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4ParticleTable.hh"
+
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
-/**
- * TODO(Использовать генератор распада пи-мезона)
- * Ваша задача, используя код который вы написали на прошлых занятиях,
- * генерировать начальные частицы возникающие при распаде Pi мезона.
- */
-    if (isPiDecay){
+
+    if (isPiDecay) {
+        // Используем генератор распада Пи-мезона
         bool flag = false;
         std::vector<Particle> particle;
         do {
             flag = false;
             particle = piDecay->DecayPi();
-            for (auto it: particle){
+            for (auto it: particle) {
                 auto momentum = it.momentum;
-                if ((momentum.theta() / radian > 0.1 &&  momentum.theta() / radian < pi - 0.1 )){
+                if ((momentum.theta() / radian > 0.1 && momentum.theta() / radian < pi - 0.1)) {
                     flag = true;
                 }
             }
         } while (flag);
 
-        for (auto it : particle){
+        for (auto it : particle) {
             fParticleGun->SetParticleMomentumDirection(it.momentum);
             fParticleGun->SetParticleEnergy(it.energy);
             auto defenition = particleTable->FindParticle(it.pdgid);
             fParticleGun->SetParticleDefinition(defenition);
             fParticleGun->GeneratePrimaryVertex(anEvent);
         }
-    } else{
+    } else {
         fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0., 0., 1.));
         fParticleGun->SetParticleEnergy(60.0 * MeV);
 
@@ -49,7 +47,7 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
 
 }
 
-PrimaryGeneratorAction::PrimaryGeneratorAction(bool isPiDecay) :  G4VUserPrimaryGeneratorAction(), isPiDecay(isPiDecay) {
+PrimaryGeneratorAction::PrimaryGeneratorAction(bool isPiDecay) : G4VUserPrimaryGeneratorAction(), isPiDecay(isPiDecay) {
 
     G4int n_particle = 1;
     fParticleGun = new G4ParticleGun(n_particle);

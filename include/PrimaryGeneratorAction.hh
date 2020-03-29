@@ -12,6 +12,10 @@
 
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction{
 public:
+    /**
+     *
+     * @param isPiDecay --- если true то используется генератор распада пи-мезона
+     */
     explicit PrimaryGeneratorAction(bool isPiDecay = false);
     void GeneratePrimaries(G4Event *anEvent) override;
 

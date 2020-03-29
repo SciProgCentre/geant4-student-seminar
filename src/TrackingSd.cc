@@ -10,7 +10,12 @@
 
 void TrackingSD::Initialize(G4HCofThisEvent *event) {
     G4VSensitiveDetector::Initialize(event);
-    data.clear();
+    for (int i=0; i<4; i++){
+        leftData[i] = empty;
+        rightData[i] = empty;
+    }
+    left_indx = 0;
+    rigth_indx = 0;
 }
 
 void TrackingSD::EndOfEvent(G4HCofThisEvent *event) {
@@ -18,20 +23,47 @@ void TrackingSD::EndOfEvent(G4HCofThisEvent *event) {
 
     auto analysisManager = tupleId->analysisManager;
 //    std::cout << "End event" << std::endl;
-    for (auto it : data){
-        int id;
-        if (it.detector == 0){
-            id = tupleId->rightTrackId;
+    bool write_flag = false;
+    for (int i=0; i<4; i++){
+        if (rightData[i].time >0){
+            write_flag = true;
         }
-        else{
-            id = tupleId->leftTrackId;
-        }
-        analysisManager->FillNtupleDColumn(id, 0, it.position.getX());
-        analysisManager->FillNtupleDColumn(id, 1, it.position.getY());
-        analysisManager->FillNtupleDColumn(id, 2, it.position.getZ());
-        analysisManager->FillNtupleDColumn(id, 3,it.time);
-        analysisManager->AddNtupleRow(id);
     }
+    if (write_flag){
+        for (int i=0; i<4; i++){
+            int id = tupleId->rightTrackId;
+            auto it = rightData[i];
+            analysisManager->FillNtupleDColumn(id, 0, it.position.getX());
+            analysisManager->FillNtupleDColumn(id, 1, it.position.getY());
+            analysisManager->FillNtupleDColumn(id, 2, it.position.getZ());
+            analysisManager->FillNtupleDColumn(id, 3,it.time);
+            analysisManager->FillNtupleIColumn(id, 4, eventID);
+            analysisManager->AddNtupleRow(id);
+
+        }
+    }
+    write_flag = false;
+    for (int i=0; i<4; i++){
+        if (leftData[i].time >0){
+            write_flag = true;
+        }
+    }
+    if (write_flag) {
+        for (int i = 0; i < 4; i++) {
+            int id = tupleId->leftTrackId;
+            auto it = leftData[i];
+            analysisManager->FillNtupleDColumn(id, 0, it.position.getX());
+            analysisManager->FillNtupleDColumn(id, 1, it.position.getY());
+            analysisManager->FillNtupleDColumn(id, 2, it.position.getZ());
+            analysisManager->FillNtupleDColumn(id, 3, it.time);
+            analysisManager->FillNtupleIColumn(id, 4, eventID);
+            analysisManager->AddNtupleRow(id);
+        }
+    }
+    eventID++;
+
+
+//    std::cout << leftData.size() << " " << rightData.size() << std::endl;
 }
 
 G4bool TrackingSD::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist) {
@@ -46,11 +78,44 @@ G4bool TrackingSD::ProcessHits(G4Step *aStep, G4TouchableHistory *ROhist) {
         int cellNumber = aStep->GetTrack()->GetVolume()->GetCopyNo();
 //
         TrackingData trackingData;
-        trackingData.detector = detectorNumber;
         trackingData.position = aStep->GetTrack()->GetPosition();
         trackingData.deposit = aStep->GetTotalEnergyDeposit();
         trackingData.time = aStep->GetTrack()->GetGlobalTime();
-        data.push_back(trackingData);
+        if (detectorNumber == 0){
+            if (rigth_cur_z == 0){
+                rigth_cur_z = trackingData.position.getZ();
+                rightData[0] = trackingData;
+                rigth_indx++;
+            }
+            else{
+                if (rigth_indx !=4){
+                    if (abs(rigth_cur_z - trackingData.position.getZ()) > 2*tracking_thickness){
+                        rigth_cur_z =  trackingData.position.getZ();
+                        rightData[rigth_indx] = trackingData;
+                        rigth_indx++;
+                    }
+                }
+
+            }
+
+        } else{
+            if (left_cur_z == 0){
+                left_cur_z = trackingData.position.getZ();
+                leftData[0] = trackingData;
+                left_indx++;
+            }
+            else{
+                if (left_indx != 4){
+                    if (abs(left_cur_z - trackingData.position.getZ()) > 2*tracking_thickness){
+                        left_cur_z =  trackingData.position.getZ();
+                        leftData[left_indx] = trackingData;
+                        left_indx++;
+                    }
+                }
+
+            }
+
+        }
     }
 
     return 0;

@@ -19,7 +19,25 @@ void RunAction::BeginOfRunAction(const G4Run *aRun) {
      * Создайте с помощью analysisManager две таблицы: для правого и левого калориметра
      * В цикле создайте столбец для кадой секции калориметра
      */
+    // For calorimeter
+    int number = calorimeter_number_of_segment;
+    int leftCalId = analysisManager->CreateNtuple("LC", "Left calorimeter");
+    for (int i = 0; i < number; ++i) {
+        analysisManager->CreateNtupleDColumn("LC" + std::to_string(i));
+    }
+    analysisManager->FinishNtuple(leftCalId);
 
+
+    int rightCalId = analysisManager->CreateNtuple("RC", "Right calorimeter");
+    for (int i = 0; i < number; ++i) {
+        analysisManager->CreateNtupleDColumn("RC" + std::to_string(i));
+    }
+    analysisManager->FinishNtuple(rightCalId);
+
+
+    tupleId->leftCalId = leftCalId;
+    tupleId->rightCalId = rightCalId;
+    // End calorimeter
 
     //For Tracking
     int leftTrackId = analysisManager->CreateNtuple("LT", "Left tracking detector");
@@ -27,6 +45,7 @@ void RunAction::BeginOfRunAction(const G4Run *aRun) {
     analysisManager->CreateNtupleDColumn("yL");
     analysisManager->CreateNtupleDColumn("zL");
     analysisManager->CreateNtupleDColumn("tL");
+    analysisManager->CreateNtupleIColumn("eventL");
     analysisManager->FinishNtuple(leftTrackId);
 
     int rightTrackId = analysisManager->CreateNtuple("RT", "Right tracking detector");
@@ -34,6 +53,7 @@ void RunAction::BeginOfRunAction(const G4Run *aRun) {
     analysisManager->CreateNtupleDColumn("yR");
     analysisManager->CreateNtupleDColumn("zR");
     analysisManager->CreateNtupleDColumn("tR");
+    analysisManager->CreateNtupleIColumn("eventR");
     analysisManager->FinishNtuple(rightTrackId);
     tupleId->leftTrackId = leftTrackId;
     tupleId->rightTrackId = rightTrackId;
