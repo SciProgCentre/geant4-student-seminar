@@ -12,21 +12,22 @@ template = Template("""/mipt/mode gps
 /run/beamOn ${number}
 """)
 
+
 def generator():
     number = 5
     for particle in ["gamma", "e-"]:
         for energy in range(10, 70, 10):
             output = "{}_{}MeV_{}n".format(particle, energy, number)
             result = {
-                'number' : number,
-                'energy' : float(energy),
-                'particle' : particle,
-                "output" : output
+                'number': number,
+                'energy': float(energy),
+                'particle': particle,
+                "output": output
             }
             yield result
 
 
-def run(parameters :dict):
+def run(parameters: dict):
     pwd = os.getcwd()
     output_dir = "calibration"
     os.makedirs(output_dir, exist_ok=True)
@@ -37,7 +38,15 @@ def run(parameters :dict):
     with open(mac_name, "w") as fout:
         fout.write(mac)
     command = "../build/pi-decay"
-    p = subprocess.Popen(command+ " " +mac_name, shell=True)
+    p = subprocess.Popen(command + " " + mac_name, shell=True,
+                         stdout=subprocess.PIPE,
+                         stdin=subprocess.PIPE,
+                         stderr=subprocess.PIPE,
+                         encoding='utf-8')
+    out, err = p.communicate()
+    with open(name + ".log", "w") as fout:
+        fout.write(out)
+        fout.write(err)
     p.wait()
     os.chdir(pwd)
     return name
