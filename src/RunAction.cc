@@ -11,7 +11,7 @@
 void RunAction::BeginOfRunAction(const G4Run *aRun) {
     G4UserRunAction::BeginOfRunAction(aRun);
     G4AnalysisManager *analysisManager = G4Analysis::ManagerInstance("root");
-    analysisManager->OpenFile("PiDecay");
+    analysisManager->OpenFile(settings->output);
     tupleId->analysisManager = analysisManager;
 
     /**
@@ -68,6 +68,6 @@ void RunAction::EndOfRunAction(const G4Run *aRun) {
     analysisManager->CloseFile(true);
 }
 
-RunAction::RunAction(TupleId *tupleId) : tupleId(tupleId) {
+RunAction::RunAction(TupleId *tupleId, Settings* settings) : tupleId(tupleId), settings(settings) {
 
 }

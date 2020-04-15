@@ -6,19 +6,29 @@
 #include <G4UIExecutive.hh>
 #include <G4UImanager.hh>
 #include <RunAction.hh>
+#include <random>
 #include "G4RunManager.hh"
+#include "Settings.hh"
+#include "Messenger.hh"
 
 int main(int argc, char **argv) {
+    random_device rd;
+    uniform_int_distribution<long> uid(0, LONG_MAX);
+    long seed = uid(rd);
+    HepRandom::setTheSeed(seed);
+    cout<<"Seed: " << seed<<endl;
+    auto settings = new Settings();
+    auto messender = Messenger(settings);
     G4UIExecutive *ui = nullptr;
     if (argc == 1) {
         ui = new G4UIExecutive(argc, argv);
     }
     TupleId *tupleId = new TupleId();
     G4RunManager *runManager = new G4RunManager;
-    runManager->SetUserInitialization(new DetectorConstruction(tupleId));
+    runManager->SetUserInitialization(new DetectorConstruction(tupleId,settings));
     runManager->SetUserInitialization(new QGSP_BERT);
-    runManager->SetUserAction(new PrimaryGeneratorAction(true));
-    runManager->SetUserAction(new RunAction(tupleId));
+    runManager->SetUserAction(new PrimaryGeneratorAction(settings));
+    runManager->SetUserAction(new RunAction(tupleId, settings));
     runManager->Initialize();
 
     G4VisManager *visManager = new G4VisExecutive;

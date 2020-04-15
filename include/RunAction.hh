@@ -8,11 +8,12 @@
 
 #include <G4UserRunAction.hh>
 #include "TupleId.hh"
+#include "Settings.hh"
 
 class RunAction : public G4UserRunAction{
 public:
 
-    explicit RunAction(TupleId* tupleId);
+    explicit RunAction(TupleId* tupleId, Settings* settings);
 
     void BeginOfRunAction(const G4Run *aRun) override;
 
@@ -20,6 +21,7 @@ public:
 
 private:
     TupleId* tupleId;
+    Settings* settings;
 };
 
 

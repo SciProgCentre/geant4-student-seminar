@@ -231,7 +231,7 @@ void DetectorConstruction::InitializeMaterials() {
 void DetectorConstruction::ConstructSDandField() {
     G4VUserDetectorConstruction::ConstructSDandField();
     G4MagneticField *magField;
-    magField = new G4UniformMagField(G4ThreeVector(0., 50.0 * kilogauss, 0.0));
+    magField = new G4UniformMagField(G4ThreeVector(0., settings->field, 0.0));
     auto fieldMgr = new G4FieldManager;
     fieldMgr->SetDetectorField(magField);
     fieldMgr->CreateChordFinder(magField);

@@ -11,6 +11,7 @@
 #include "TupleId.hh"
 #include "GeometrySize.hh"
 #include "G4SystemOfUnits.hh"
+#include "Settings.hh"
 
 using namespace CLHEP;
 
@@ -22,7 +23,7 @@ public:
 
     void ConstructSDandField() override;
 
-    explicit DetectorConstruction(TupleId* tupleId): tupleId(tupleId){
+    explicit DetectorConstruction(TupleId* tupleId, Settings* settings): tupleId(tupleId), settings(settings){
         InitializeMaterials();
 
     }
@@ -47,6 +48,7 @@ private:
     G4LogicalVolume* CreateMagnet();
     void SetupDetectors();
     TupleId* tupleId;
+    Settings* settings;
 };
 
 

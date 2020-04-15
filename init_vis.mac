@@ -1,6 +1,8 @@
 /vis/open OGL
 /control/saveHistory
 
+/mipt/mode decay
+
 #/vis/verbose errors
 /vis/viewer/set/background white
 /vis/geometry/set/colour all -1 0 0 0
