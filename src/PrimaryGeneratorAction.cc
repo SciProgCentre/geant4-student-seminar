@@ -9,8 +9,10 @@
 #include "G4ParticleTable.hh"
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
-
-    if (isPiDecay) {
+    if (settings->mode == "gps"){
+        particleSource->GeneratePrimaryVertex(anEvent);
+    }
+    else{
         // Используем генератор распада Пи-мезона
         bool flag = false;
         std::vector<Particle> particle;
@@ -32,23 +34,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
             fParticleGun->SetParticleDefinition(defenition);
             fParticleGun->GeneratePrimaryVertex(anEvent);
         }
-    } else {
-        fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0., 0., 1.));
-        fParticleGun->SetParticleEnergy(60.0 * MeV);
-
-        // Генерируем первую первичную частицы для события
-        fParticleGun->SetParticleDefinition(G4Electron::Definition());
-        fParticleGun->GeneratePrimaryVertex(anEvent);
-
-        // Генерируем вторую первичную частицу для события
-        fParticleGun->SetParticleDefinition(G4Gamma::Definition());
-        fParticleGun->GeneratePrimaryVertex(anEvent);
     }
-
 }
 
-PrimaryGeneratorAction::PrimaryGeneratorAction(bool isPiDecay) : G4VUserPrimaryGeneratorAction(), isPiDecay(isPiDecay) {
-
+PrimaryGeneratorAction::PrimaryGeneratorAction(Settings* settings) : G4VUserPrimaryGeneratorAction(), settings(settings) {
+    particleSource = new G4GeneralParticleSource();
     G4int n_particle = 1;
     fParticleGun = new G4ParticleGun(n_particle);
 

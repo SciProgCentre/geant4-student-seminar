@@ -8,22 +8,24 @@
 
 #include <G4VUserPrimaryGeneratorAction.hh>
 #include <G4ParticleGun.hh>
+#include <G4GeneralParticleSource.hh>
 #include "PiDecayGenerator.hh"
+#include "Settings.hh"
 
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction{
 public:
-    /**
-     *
-     * @param isPiDecay --- если true то используется генератор распада пи-мезона
-     */
-    explicit PrimaryGeneratorAction(bool isPiDecay = false);
+    explicit PrimaryGeneratorAction(Settings* settings);
     void GeneratePrimaries(G4Event *anEvent) override;
-
+    ~PrimaryGeneratorAction(){
+        delete particleSource;
+        delete fParticleGun;
+    }
 private:
-    bool isPiDecay;
     G4ParticleGun* fParticleGun;
     PiDecayGenerator *piDecay;
     G4ParticleTable *particleTable;
+    Settings* settings;
+    G4GeneralParticleSource *particleSource;
 };
 
 
