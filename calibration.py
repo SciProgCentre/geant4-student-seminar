@@ -14,7 +14,7 @@ template = Template("""/mipt/mode gps
 
 
 def generator():
-    number = 5
+    number = 50000 
     for particle in ["gamma", "e-"]:
         for energy in range(10, 70, 10):
             output = "{}_{}MeV_{}n".format(particle, energy, number)
