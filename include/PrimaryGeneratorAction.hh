@@ -11,6 +11,8 @@
 #include <G4GeneralParticleSource.hh>
 #include "PiDecayGenerator.hh"
 #include "Settings.hh"
+#include "G4DecayTable.hh"
+#include "G4DecayProducts.hh"
 
 class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction{
 public:
@@ -26,6 +28,7 @@ private:
     G4ParticleTable *particleTable;
     Settings* settings;
     G4GeneralParticleSource *particleSource;
+    G4DecayTable *table;
 };
 
 

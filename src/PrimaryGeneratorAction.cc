@@ -4,45 +4,52 @@
 
 #include <G4Gamma.hh>
 #include <G4Electron.hh>
+#include <G4PionZero.hh>
+#include <G4DynamicParticle.hh>
 #include "PrimaryGeneratorAction.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4ParticleTable.hh"
 
 void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
-    if (settings->mode == "gps"){
+    if (settings->mode == "gps") {
         particleSource->GeneratePrimaryVertex(anEvent);
-    }
-    else{
-        // Используем генератор распада Пи-мезона
+    } else {
+
+        G4VDecayChannel *channel = table->GetDecayChannel(settings->channel);
+        G4DecayProducts *children;
         bool flag = false;
-        std::vector<Particle> particle;
         do {
             flag = false;
-            particle = piDecay->DecayPi();
-            for (auto it: particle) {
-                auto momentum = it.momentum;
-                if ((momentum.theta() / radian > 0.1 && momentum.theta() / radian < pi - 0.1)) {
+            children = channel->DecayIt(G4PionZero::Definition()->GetPDGMass());
+            for (int i = 0; i < children->entries(); ++i) {
+                G4DynamicParticle *particle = children->operator[](i);
+                auto momentum = particle->GetMomentumDirection();
+                double theta  = momentum.theta() / radian;
+                if ((theta > 0.1 && theta < pi - 0.1)) {
                     flag = true;
                 }
             }
         } while (flag);
-
-        for (auto it : particle) {
-            fParticleGun->SetParticleMomentumDirection(it.momentum);
-            fParticleGun->SetParticleEnergy(it.energy);
-            auto defenition = particleTable->FindParticle(it.pdgid);
-            fParticleGun->SetParticleDefinition(defenition);
+        for (int i = 0; i < children->entries(); ++i) {
+            G4DynamicParticle *particle = children->operator[](i);
+            fParticleGun->SetParticleMomentumDirection(particle->GetMomentumDirection());
+            fParticleGun->SetParticleEnergy(particle->GetKineticEnergy());
+            fParticleGun->SetParticleDefinition(particle->GetDefinition());
             fParticleGun->GeneratePrimaryVertex(anEvent);
         }
+
     }
 }
 
-PrimaryGeneratorAction::PrimaryGeneratorAction(Settings* settings) : G4VUserPrimaryGeneratorAction(), settings(settings) {
+PrimaryGeneratorAction::PrimaryGeneratorAction(Settings *settings)
+        : G4VUserPrimaryGeneratorAction(), settings(settings) {
     particleSource = new G4GeneralParticleSource();
     G4int n_particle = 1;
     fParticleGun = new G4ParticleGun(n_particle);
 
     piDecay = new PiDecayGenerator();
+
+    table = G4PionZero::Definition()->GetDecayTable();
 
     particleTable = G4ParticleTable::GetParticleTable();
 }

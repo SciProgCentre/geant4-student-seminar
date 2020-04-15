@@ -1,0 +1,5 @@
+/mipt/mode decay
+/mipt/channel 1
+/mipt/field 50.0 kilogauss
+/mipt/output channel_1
+/run/beamOn 10

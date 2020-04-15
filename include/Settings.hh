@@ -14,6 +14,7 @@ public:
     string output = "PiDecay";
     double field = 50.0 * kilogauss;
     string mode = "gps";
+    int channel = 0;
 };
 
 
