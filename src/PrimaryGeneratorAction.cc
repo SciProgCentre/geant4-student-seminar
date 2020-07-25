@@ -28,7 +28,11 @@ void PrimaryGeneratorAction::GeneratePrimaries(G4Event *anEvent) {
                 if ((theta > 0.1 && theta < pi - 0.1)) {
                     flag = true;
                 }
+                else{
+                    delete children;
+                }
             }
+
         } while (flag);
         for (int i = 0; i < children->entries(); ++i) {
             G4DynamicParticle *particle = children->operator[](i);

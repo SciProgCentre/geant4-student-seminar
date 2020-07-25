@@ -1,7 +1,7 @@
 /vis/open OGL
 /control/saveHistory
 
-/mipt/mode decay
+/mipt/mode gps
 
 #/vis/verbose errors
 /vis/viewer/set/background white
